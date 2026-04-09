@@ -31,7 +31,7 @@ const httpServer = createServer(app);
 // Setup Socket.io
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL || 'http://localhost:5173',
+        origin: ['http://localhost:3000', 'https://chatbot.qorex.in'],
         methods: ['GET', 'POST'],
         credentials: true,
     },
