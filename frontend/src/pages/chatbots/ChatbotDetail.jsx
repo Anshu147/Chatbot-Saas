@@ -27,6 +27,22 @@ const ChatbotDetail = () => {
         };
     }, [dispatch, id]);
 
+    // Polling for document processing status
+    useEffect(() => {
+        const hasProcessingDocs = documents.some(doc => doc.processingStatus === 'processing');
+        
+        let interval;
+        if (hasProcessingDocs) {
+            interval = setInterval(() => {
+                dispatch(fetchDocuments(id));
+            }, 5000); // Poll every 5 seconds
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [dispatch, id, documents]);
+
     const handleFileSelect = (e) => {
         setSelectedFile(e.target.files[0]);
     };
@@ -110,24 +126,28 @@ const ChatbotDetail = () => {
                     </Button>
                 </div> */}
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">{currentChatbot.name}</h1>
+                        <h1 className="text-2xl font-bold text-gray-900 break-words">{currentChatbot.name}</h1>
                         <p className="text-gray-600 mt-1">
                             Created {new Date(currentChatbot.createdAt).toLocaleDateString()}
                         </p>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                         <Button
                             variant="secondary"
                             onClick={() => navigate(`/chatbots/${id}/test`)}
+                            className="w-full sm:w-auto justify-center"
                         >
                             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
                             Test Chat
                         </Button>
-                        <Button onClick={() => setShowEmbedCode(true)}>
+                        <Button 
+                            onClick={() => setShowEmbedCode(true)}
+                            className="w-full sm:w-auto justify-center"
+                        >
                             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                             </svg>
@@ -231,17 +251,23 @@ const ChatbotDetail = () => {
 
                     {/* Upload Section */}
                     <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-                        <div className="flex items-center space-x-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                             <input
                                 type="file"
                                 accept=".pdf,.txt,.docx"
                                 onChange={handleFileSelect}
-                                className="flex-1"
+                                className="block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-primary-50 file:text-primary-700
+                                    hover:file:bg-primary-100"
                             />
                             <Button
                                 onClick={handleUpload}
                                 disabled={!selectedFile || uploading}
                                 loading={uploading}
+                                className="w-full sm:w-auto min-w-[120px]"
                             >
                                 Upload
                             </Button>

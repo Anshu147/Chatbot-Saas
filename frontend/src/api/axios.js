@@ -30,7 +30,12 @@ axiosInstance.interceptors.response.use(
         const originalRequest = error.config;
 
         // If error is 401 and we haven't tried to refresh yet
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Exclude login, register, and refresh requests from auto-refresh
+        const isAuthRequest = originalRequest.url.includes('/auth/login') || 
+                            originalRequest.url.includes('/auth/register') ||
+                            originalRequest.url.includes('/auth/refresh');
+
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
             originalRequest._retry = true;
 
             try {
