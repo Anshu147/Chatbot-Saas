@@ -58,7 +58,7 @@ export const generateStreamingChatCompletion = async (messages, options = {}) =>
         const client = getGroqClient();
 
         const stream = await client.chat.completions.create({
-            model: options.model || 'llama-3.3-70b-versatile',
+            model: options.model || 'openai/gpt-oss-120b',
             messages,
             temperature: options.temperature || 0.7,
             max_tokens: options.maxTokens || 1024,
